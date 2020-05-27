@@ -1,5 +1,5 @@
 from netmiko import ConnectHandler  #Used to SSH connect into devices
-from getpass import getpass         #
+from getpass import getpass         #Hides the password input
 
 filename=input("Device list filename?\n")
 
@@ -26,3 +26,19 @@ while(True):
     break
 
 print(password1+" "+password2)  #Only for debugging purposes
+
+for device in devicenames:
+    print("Connecting to device "+device)
+    network_device = {
+        'device_type': 'cisco_ios',
+        'ip': device,
+        'username': username,
+        'password': password1,
+    }
+    net_connect = ConnectHandler(**network_device)      #Analize where to put the try for exception handling
+    net_connect.send_command("terminal lenght 0")
+    output = net_connect.send_command("show run")       #show run only for testing
+    saveoutput =  open("outputs/showtech-"+device+".txt", "w")
+    saveoutput.write(output)
+    saveoutput.write("\n")
+    saveoutput.close
