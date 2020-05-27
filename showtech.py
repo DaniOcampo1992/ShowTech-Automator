@@ -34,10 +34,11 @@ for device in devicenames:
         'ip': device,
         'username': username,
         'password': password1,
+        "port": 8181,
     }
     net_connect = ConnectHandler(**network_device)      #Analize where to put the try for exception handling
-    net_connect.send_command("terminal lenght 0")
-    output = net_connect.send_command("show run")       #show run only for testing
+    #net_connect.send_command("terminal lenght 0")
+    output = net_connect.send_command_timing("show tech-support")       #show run only for testing
     saveoutput =  open("outputs/showtech-"+device+".txt", "w")
     saveoutput.write(output)
     saveoutput.write("\n")
