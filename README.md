@@ -1,1 +1,4 @@
 # ShowTech-Automator
+
+Dependencies:
+    - Netmiko
