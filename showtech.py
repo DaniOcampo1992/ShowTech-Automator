@@ -1,7 +1,8 @@
 """
 Remaining tasks:
-- Specify SSH port in devices file, or use default if there is none.
-- Exception handling on net_connect
+- Code a validator on the input file, to prevent bad readings.
+- Commit an example input file.
+- Use threading.
 """
 
 
@@ -10,6 +11,8 @@ from getpass import getpass         #Hides the password input
 from netmiko.ssh_exception import NetMikoTimeoutException
 from netmiko.ssh_exception import SSHException
 from netmiko.ssh_exception import AuthenticationException
+
+#------------------------Input file------------------------#
 
 filename=input("Device list filename?\n")
 
@@ -22,19 +25,29 @@ while(True):
         print("The filename specified does not exist.\n")
         filename=input("Device list filename?\n")
 
+#---------------------Devices dictionaries---------------------#
 devicelist = {}
 for item in devicenames:
-    if "," in item:             #This should be eventually changed to a proper indexing, not more of 1 comma per item
-        devicedata = item.split(",")
-    else:
+    if item.count(",") == 1:
+        if item[-1:] == ",":
+            print("There are inconsistencies in the input file")
+            exit()
+        else:
+            devicedata = item.split(",")
+    elif item.count(",") < 1:
         devicedata[0] = item
         devicedata[1] = 22
+    else:
+        print("There are inconsistencies in the input file")
+        exit()
+    
     devicedict = {
         "name": devicedata[0],
         "port": devicedata[1]
     }
     devicelist[item] = devicedict
 
+#-------------------Username and Pwd prompt-------------------#
 username=input("Enter your SSH username: ")
 
 while(True):
@@ -46,6 +59,7 @@ while(True):
         continue
     break
 
+#---------------------Main script---------------------#
 for items,device in devicelist.items():
     print("Connecting to device "+device["name"])
     network_device = {

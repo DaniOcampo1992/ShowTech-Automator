@@ -11,13 +11,7 @@ Operability conditions:
 - All destination devices must share the same SSH username and password.
 
 Usage:
-- Create a simple text file listing the domain name or IP addresses of the destination devices, one per line. By default, the script attempts to connect using TCP port 22. If a device on the list use a different SSH port, specify it next to the address separated by a coma (,).
-Example:
-192.168.4.1
-homerouter.com,8181
-10.40.5.1,4545
-neighborsrouter.com
-
+- Create a text file in the script folder listing the domain name or IP addresses of the destination devices, one per line. By default, the script attempts to connect using TCP port 22. If a device on the list use a different SSH port, specify it next to the address separated by a coma (,).
 - Run showtech.py.
 - Specify the name of the previously created text file.
 - The script will prompt to type the username and password. The password must be typed twice to prevent typos.
