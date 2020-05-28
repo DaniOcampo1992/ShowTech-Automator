@@ -1,5 +1,15 @@
+"""
+Remaining tasks:
+- Specify SSH port in devices file, or use default if there is none.
+- Exception handling on net_connect
+"""
+
+
 from netmiko import ConnectHandler  #Used to SSH connect into devices
 from getpass import getpass         #Hides the password input
+from netmiko.ssh_exception import NetMikoTimeoutException
+from netmiko.ssh_exception import SSHException
+from netmiko.ssh_exception import AuthenticationException
 
 filename=input("Device list filename?\n")
 
@@ -12,8 +22,19 @@ while(True):
         print("The filename specified does not exist.\n")
         filename=input("Device list filename?\n")
 
+devicelist = {}
+for item in devicenames:
+    if "," in item:             #This should be eventually changed to a proper indexing, not more of 1 comma per item
+        devicedata = item.split(",")
+    else:
+        devicedata[0] = item
+        devicedata[1] = 22
+    devicedict = {
+        "name": devicedata[0],
+        "port": devicedata[1]
+    }
+    devicelist[item] = devicedict
 
-print(devicenames)  #Only for debugging purposes
 username=input("Enter your SSH username: ")
 
 while(True):
@@ -25,9 +46,49 @@ while(True):
         continue
     break
 
-print(password1+" "+password2)  #Only for debugging purposes
+for items,device in devicelist.items():
+    print("Connecting to device "+device["name"])
+    network_device = {
+        "device_type": "cisco_ios",
+        "ip": device["name"],
+        "username": username,
+        "password": password1,
+        "port": device["port"],
+    }
 
-for device in devicenames:
+    """net_connect = ConnectHandler(**network_device)
+    h1 = net_connect.send_command("show runn | include hostname ")
+    h2 = h1.split(" ")
+    print (h2)
+    h3 = h2[1]
+    print (h3)"""
+    
+    try:
+        net_connect = ConnectHandler(**network_device)
+        output = net_connect.send_command_timing("show tech-support",delay_factor=100)       #show run only for testing
+        saveoutput =  open("outputs/showtech-"+device["name"]+".txt", "w")
+        saveoutput.write(output)
+        saveoutput.write("\n")
+        saveoutput.close
+        print("Output saved at outputs/showtech-"+device["name"]+".txt")
+    except (AuthenticationException):
+        print ("Authentication failure on device "+device["name"])
+        continue
+    except (NetMikoTimeoutException):
+        print ("Timeout to device "+device["name"])
+        continue
+    except (EOFError):
+        print ("End of file while attempting device "+device["name"])
+        continue
+    except (SSHException):
+        print ("SSH issue. Are you sure SSH is enabled on "+device["name"]+"?")
+        continue
+    except Exception as unknown_error:
+        print ("Unknown error: "+unknown_error)
+        continue
+
+
+"""for device in devicenames:
     print("Connecting to device "+device)
     network_device = {
         'device_type': 'cisco_ios',
@@ -42,4 +103,4 @@ for device in devicenames:
     saveoutput =  open("outputs/showtech-"+device+".txt", "w")
     saveoutput.write(output)
     saveoutput.write("\n")
-    saveoutput.close
+    saveoutput.close"""
