@@ -55,13 +55,6 @@ for items,device in devicelist.items():
         "password": password1,
         "port": device["port"],
     }
-
-    """net_connect = ConnectHandler(**network_device)
-    h1 = net_connect.send_command("show runn | include hostname ")
-    h2 = h1.split(" ")
-    print (h2)
-    h3 = h2[1]
-    print (h3)"""
     
     try:
         net_connect = ConnectHandler(**network_device)
@@ -72,35 +65,17 @@ for items,device in devicelist.items():
         saveoutput.close
         print("Output saved at outputs/showtech-"+device["name"]+".txt")
     except (AuthenticationException):
-        print ("Authentication failure on device "+device["name"])
+        print ("Cannot authenticate on "+device["name"]+". Bad username and password maybe?")
         continue
     except (NetMikoTimeoutException):
         print ("Timeout to device "+device["name"])
         continue
     except (EOFError):
-        print ("End of file while attempting device "+device["name"])
+        print ("End of file error on device "+device["name"])
         continue
     except (SSHException):
-        print ("SSH issue. Are you sure SSH is enabled on "+device["name"]+"?")
+        print ("SSH error. Is SSH enabled on "+device["name"]+"?")
         continue
     except Exception as unknown_error:
         print ("Unknown error: "+unknown_error)
         continue
-
-
-"""for device in devicenames:
-    print("Connecting to device "+device)
-    network_device = {
-        'device_type': 'cisco_ios',
-        'ip': device,
-        'username': username,
-        'password': password1,
-        "port": 8181,
-    }
-    net_connect = ConnectHandler(**network_device)      #Analize where to put the try for exception handling
-    #net_connect.send_command("terminal lenght 0")
-    output = net_connect.send_command_timing("show tech-support")       #show run only for testing
-    saveoutput =  open("outputs/showtech-"+device+".txt", "w")
-    saveoutput.write(output)
-    saveoutput.write("\n")
-    saveoutput.close"""
