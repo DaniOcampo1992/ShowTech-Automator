@@ -1,6 +1,5 @@
 """
 Remaining tasks:
-- Code a validator on the input file, to prevent bad readings.
 - Commit an example input file.
 - Use threading.
 """
