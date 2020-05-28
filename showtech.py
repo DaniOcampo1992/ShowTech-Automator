@@ -73,10 +73,9 @@ for items,device in devicelist.items():
     try:
         net_connect = ConnectHandler(**network_device)
         output = net_connect.send_command_timing("show tech-support",delay_factor=100)       #show run only for testing
-        saveoutput =  open("outputs/showtech-"+device["name"]+".txt", "w")
-        saveoutput.write(output)
-        saveoutput.write("\n")
-        saveoutput.close
+        with open("outputs/showtech-"+device["name"]+".txt", "w") as saveoutput:
+            saveoutput.write(output)
+        net_connect.disconnect()
         print("Output saved at outputs/showtech-"+device["name"]+".txt")
     except (AuthenticationException):
         print ("Cannot authenticate on "+device["name"]+". Bad username and password maybe?")
